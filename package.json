@@ -1,0 +1,23 @@
+{
+  "name": "ensaio-backing-tracks",
+  "version": "1.0.0",
+  "description": "Trabalho de Banco de Dados II - Grupo H. Marketplace de backing tracks em cima do banco do BD I.",
+  "main": "src/server.js",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch --env-file=.env src/server.js",
+    "db:setup": "node --env-file=.env db/setup.js",
+    "db:reset": "node --env-file=.env db/setup.js --reset"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-session": "^2.1.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "pg": "^8.13.1"
+  }
+}

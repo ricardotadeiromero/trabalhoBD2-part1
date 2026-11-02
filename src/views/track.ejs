@@ -1,0 +1,139 @@
+<%- include('partials/header') %>
+
+<div class="track-page">
+  <section class="track-main">
+    <div class="track-hero">
+      <div class="cover cover-lg" style="--hue: <%= (track.musica_id * 47) % 360 %>">
+        <span><%= initials(track.musica) %></span>
+      </div>
+      <div>
+        <p class="eyebrow">Backing track</p>
+        <h1><%= track.nome %></h1>
+        <p class="muted">
+          Baseado em <strong><%= track.musica %></strong> (<%= track.album %>)
+          · <%= formatDuration(track.duracao) %>
+        </p>
+        <p class="small">
+          Publicado por <a href="/users/<%= track.criador_id %>"><%= track.criador %></a>
+          <span class="badge"><%= levelLabels[track.criador_nivel] %></span>
+          em <%= formatDate(track.data_criacao) %>
+        </p>
+      </div>
+    </div>
+
+    <h2>Stems inclusos</h2>
+    <% if (stems.length) { %>
+      <table class="table">
+        <thead><tr><th>Faixa</th><th>Instrumento</th><th class="num">Duração</th></tr></thead>
+        <tbody>
+          <% stems.forEach(function (s) { %>
+            <tr>
+              <td><%= s.nome_faixa %></td>
+              <td><% if (s.instrumento) { %><a class="chip" href="/explore?instrument=<%= encodeURIComponent(s.instrumento) %>"><%= s.instrumento %></a><% } else { %>-<% } %></td>
+              <td class="num"><%= formatDuration(s.duracao) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="empty">O criador ainda não separou os stems.</p>
+    <% } %>
+
+    <h2>Créditos da música</h2>
+    <ul class="credits">
+      <% credits.forEach(function (c) { %>
+        <li><a href="/artists/<%= c.id %>"><%= c.nome_artistico %></a> <span class="muted small"><%= c.papel_artista %></span></li>
+      <% }) %>
+    </ul>
+
+    <% if (alsoBought.length) { %>
+      <h2>Quem comprou este também comprou</h2>
+      <div class="list-cards">
+        <% alsoBought.forEach(function (a) { %>
+          <a class="card playlist-row" href="/tracks/<%= a.id %>">
+            <strong><%= a.nome %></strong>
+            <span class="muted small"><%= a.musica %> · <%= a.artistas %></span>
+            <span class="price"><%= formatPrice(a.valor) %></span>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (sameSong.length) { %>
+      <h2>Outras versões de <%= track.musica %></h2>
+      <div class="list-cards">
+        <% sameSong.forEach(function (s) { %>
+          <a class="card playlist-row" href="/tracks/<%= s.id %>">
+            <strong><%= s.nome %></strong>
+            <span class="muted small">por <%= s.criador %> · <%= (s.instrumentos || []).join(', ') %></span>
+            <span class="price"><%= formatPrice(s.valor) %></span>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+  <aside class="track-side">
+    <div class="card buy-box">
+      <div class="price price-lg"><%= formatPrice(track.valor) %></div>
+      <p class="muted small"><%= track.vendas %> venda<%= track.vendas == 1 ? '' : 's' %> · <%= track.qtd_stems %> stems</p>
+
+      <% if (isOwner) { %>
+        <p class="small">Esse backing track é seu. Veja as vendas no <a href="/dashboard">painel</a>.</p>
+      <% } else if (purchase && purchase.status_pagamento === 'aprovado') { %>
+        <div class="flash flash-success">Você comprou em <%= formatDate(purchase.data_compra) %>.</div>
+      <% } else if (purchase && purchase.status_pagamento === 'pendente') { %>
+        <div class="flash flash-info">Pagamento pendente (<%= paymentLabels[purchase.metodo_pagamento] %>). <a href="/library">Ir para a biblioteca</a></div>
+      <% } else if (currentUser) { %>
+        <% if (purchase && purchase.status_pagamento === 'recusado') { %>
+          <div class="flash flash-error">Seu último pagamento foi recusado. Tente de novo.</div>
+        <% } %>
+        <form method="post" action="/tracks/<%= track.id %>/buy" class="form">
+          <label>Forma de pagamento
+            <select name="metodo" required>
+              <% Object.keys(paymentLabels).forEach(function (key) { %>
+                <option value="<%= key %>"><%= paymentLabels[key] %></option>
+              <% }) %>
+            </select>
+          </label>
+          <button type="submit" class="btn btn-block">Comprar</button>
+        </form>
+      <% } else { %>
+        <a href="/login" class="btn btn-block">Entre para comprar</a>
+      <% } %>
+    </div>
+
+    <% if (currentUser) { %>
+      <div class="card">
+        <h3>Adicionar a uma playlist</h3>
+        <% if (myPlaylists.length) { %>
+          <form method="post" action="/playlists/add" class="form">
+            <input type="hidden" name="backingtrack_id" value="<%= track.id %>">
+            <input type="hidden" name="back" value="/tracks/<%= track.id %>">
+            <select name="playlist_id">
+              <% myPlaylists.forEach(function (p) { %>
+                <option value="<%= p.id %>"><%= p.nome %></option>
+              <% }) %>
+            </select>
+            <button type="submit" class="btn btn-ghost btn-block">Adicionar</button>
+          </form>
+        <% } else { %>
+          <p class="small muted">Já está em todas as suas playlists, ou você ainda não criou nenhuma. <a href="/playlists">Criar playlist</a></p>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% if (inPlaylists.length) { %>
+      <div class="card">
+        <h3>Aparece em</h3>
+        <ul class="plain">
+          <% inPlaylists.forEach(function (p) { %>
+            <li><a href="/playlists/<%= p.id %>"><%= p.nome %></a> <span class="muted small">de <%= p.dono %></span></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+  </aside>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+
+<div class="page-head playlist-head">
+  <div>
+    <p class="eyebrow">Playlist</p>
+    <h1><%= playlist.nome %></h1>
+    <p class="muted">
+      de <a href="/users/<%= playlist.dono_id %>"><%= playlist.dono %></a>
+      · <%= items.length %> faixas · <%= formatDuration(totalSeconds) %>
+      · salva por <%= playlist.salvamentos %> pessoa<%= playlist.salvamentos == 1 ? '' : 's' %>
+    </p>
+    <% if (instruments.length) { %>
+      <div class="chips">
+        <% instruments.forEach(function (i) { %><span class="chip"><%= i.instrumento %> ×<%= i.qtd %></span><% }) %>
+      </div>
+    <% } %>
+  </div>
+  <div class="head-actions">
+    <% if (isOwner) { %>
+      <form method="post" action="/playlists/<%= playlist.id %>/delete" data-confirm="Excluir a playlist <%= playlist.nome %>?">
+        <button type="submit" class="btn btn-ghost btn-danger">Excluir</button>
+      </form>
+    <% } else if (currentUser) { %>
+      <form method="post" action="/playlists/<%= playlist.id %>/save">
+        <input type="hidden" name="action" value="<%= isSaved ? 'unsave' : 'save' %>">
+        <button type="submit" class="btn <%= isSaved ? 'btn-ghost' : '' %>"><%= isSaved ? 'Remover das salvas' : 'Salvar playlist' %></button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<% if (items.length) { %>
+  <ol class="tracklist">
+    <% items.forEach(function (t, index) { %>
+      <li class="track-row">
+        <span class="pos"><%= t.posicao %></span>
+        <div class="cover cover-sm" style="--hue: <%= (t.musica_id * 47) % 360 %>"><span><%= initials(t.musica) %></span></div>
+        <div class="track-row-info">
+          <a href="/tracks/<%= t.id %>"><strong><%= t.nome %></strong></a>
+          <span class="muted small"><%= t.musica %> · <%= t.artistas %> · por <%= t.criador %></span>
+        </div>
+        <span class="muted small"><%= formatDuration(t.duracao) %></span>
+        <span class="price"><%= formatPrice(t.valor) %></span>
+        <% if (isOwner) { %>
+          <div class="row-actions">
+            <form method="post" action="/playlists/<%= playlist.id %>/items/<%= t.id %>/move">
+              <input type="hidden" name="direction" value="up">
+              <button type="submit" class="icon-btn" <%= index === 0 ? 'disabled' : '' %> aria-label="Subir">↑</button>
+            </form>
+            <form method="post" action="/playlists/<%= playlist.id %>/items/<%= t.id %>/move">
+              <input type="hidden" name="direction" value="down">
+              <button type="submit" class="icon-btn" <%= index === items.length - 1 ? 'disabled' : '' %> aria-label="Descer">↓</button>
+            </form>
+            <form method="post" action="/playlists/<%= playlist.id %>/items/<%= t.id %>/remove">
+              <button type="submit" class="icon-btn" aria-label="Remover">×</button>
+            </form>
+          </div>
+        <% } %>
+      </li>
+    <% }) %>
+  </ol>
+<% } else { %>
+  <p class="empty">
+    Playlist vazia.
+    <% if (isOwner) { %>Abra um backing track no <a href="/explore">catálogo</a> e use "Adicionar a uma playlist".<% } %>
+  </p>
+<% } %>
+
+<%- include('partials/footer') %>

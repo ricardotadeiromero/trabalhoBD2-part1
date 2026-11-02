@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<div class="auth-box card">
+  <h1>Criar conta</h1>
+  <% if (error) { %><div class="flash flash-error"><%= error %></div><% } %>
+  <form method="post" action="/register" class="form">
+    <label>Nome
+      <input type="text" name="nome" value="<%= form.nome || '' %>" maxlength="100" required>
+    </label>
+    <label>E-mail
+      <input type="email" name="email" value="<%= form.email || '' %>" maxlength="60" required>
+    </label>
+    <div class="form-row">
+      <label>CPF
+        <input type="text" name="cpf" value="<%= form.cpf || '' %>" inputmode="numeric" placeholder="só números" required>
+      </label>
+      <label>Nascimento
+        <input type="date" name="data_nascimento" value="<%= form.data_nascimento || '' %>">
+      </label>
+    </div>
+    <label>Seu nível no instrumento
+      <select name="nivel_experiencia">
+        <% Object.keys(levelLabels).forEach(function (key) { %>
+          <option value="<%= key %>" <%= form.nivel_experiencia === key ? 'selected' : '' %>><%= levelLabels[key] %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label>Senha
+      <input type="password" name="senha" minlength="6" required>
+    </label>
+    <button type="submit" class="btn">Criar conta</button>
+  </form>
+  <p class="small muted">Já tem conta? <a href="/login">Entrar</a></p>
+</div>
+
+<%- include('partials/footer') %>

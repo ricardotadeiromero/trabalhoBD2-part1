@@ -1,0 +1,19 @@
+<a class="card track-card" href="/tracks/<%= t.id %>">
+  <div class="cover" style="--hue: <%= (t.musica_id * 47) % 360 %>">
+    <span><%= initials(t.musica) %></span>
+  </div>
+  <div class="card-body">
+    <strong class="card-title"><%= t.nome %></strong>
+    <span class="muted small"><%= t.musica %> · <%= t.artistas %></span>
+    <% if (t.instrumentos && t.instrumentos.length) { %>
+      <div class="chips">
+        <% t.instrumentos.slice(0, 3).forEach(function (i) { %><span class="chip"><%= i %></span><% }) %>
+        <% if (t.instrumentos.length > 3) { %><span class="chip">+<%= t.instrumentos.length - 3 %></span><% } %>
+      </div>
+    <% } %>
+    <div class="card-foot">
+      <span class="price"><%= formatPrice(t.valor) %></span>
+      <span class="muted small">por <%= t.criador %></span>
+    </div>
+  </div>
+</a>

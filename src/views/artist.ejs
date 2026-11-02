@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<div class="track-hero">
+  <div class="cover cover-lg" style="--hue: <%= (artist.id * 71) % 360 %>"><span><%= initials(artist.nome_artistico) %></span></div>
+  <div>
+    <p class="eyebrow">Artista</p>
+    <h1><%= artist.nome_artistico %></h1>
+    <p class="muted"><%= artist.biografia || '' %></p>
+    <p class="small muted">Na ativa desde <%= String(artist.data_criacao).slice(0, 4) %></p>
+    <% if (instruments.length) { %>
+      <div class="chips">
+        <% instruments.forEach(function (i) { %><span class="chip"><%= i.instrumento %> ×<%= i.qtd %></span><% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<section class="section">
+  <h2>Músicas</h2>
+  <% if (songs.length) { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Música</th><th>Álbum</th><th>Papel</th><th class="num">Duração</th><th class="num">Backing tracks</th><th class="num">A partir de</th></tr></thead>
+        <tbody>
+          <% songs.forEach(function (s) { %>
+            <tr>
+              <td><%= s.titulo %></td>
+              <td><%= s.album %></td>
+              <td class="muted"><%= s.papel_artista %></td>
+              <td class="num"><%= formatDuration(s.duracao) %></td>
+              <td class="num">
+                <% if (Number(s.qtd_bt) > 0) { %><a href="/explore?song=<%= s.id %>"><%= s.qtd_bt %> ver</a><% } else { %>0<% } %>
+              </td>
+              <td class="num"><%= s.menor_preco ? formatPrice(s.menor_preco) : '-' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <p class="empty">Nenhuma música cadastrada.</p>
+  <% } %>
+</section>
+
+<section class="section">
+  <h2>Álbuns</h2>
+  <div class="list-cards">
+    <% albums.forEach(function (al) { %>
+      <div class="card playlist-row">
+        <strong><%= al.titulo %></strong>
+        <span class="muted small">
+          <%= String(al.data_lancamento).slice(0, 4) %> · <%= al.faixas %> faixas cadastradas · <%= formatDuration(al.duracao) %>
+          <% if (al.outros_artistas) { %> · com <%= al.outros_artistas %><% } %>
+        </span>
+        <span class="badge"><%= al.papel_artista %></span>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

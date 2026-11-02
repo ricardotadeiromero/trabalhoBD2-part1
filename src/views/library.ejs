@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Minha biblioteca</h1>
+</div>
+
+<div class="stat-row">
+  <div class="stat card"><span class="stat-value"><%= totals.aprovadas %></span><span class="muted small">backing tracks comprados</span></div>
+  <div class="stat card"><span class="stat-value"><%= formatPrice(totals.gasto) %></span><span class="muted small">total investido</span></div>
+  <div class="stat card"><span class="stat-value"><%= totals.pendentes %></span><span class="muted small">pagamentos pendentes</span></div>
+</div>
+
+<section class="section">
+  <h2>Compras</h2>
+  <% if (purchases.length) { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr><th>Backing track</th><th>Criador</th><th>Stems</th><th>Pagamento</th><th>Data</th><th class="num">Valor</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <% purchases.forEach(function (p) { %>
+            <tr>
+              <td><a href="/tracks/<%= p.id %>"><%= p.nome %></a><br><span class="muted small"><%= p.musica %> · <%= p.artistas %></span></td>
+              <td><a href="/users/<%= p.criador_id %>"><%= p.criador %></a></td>
+              <td><%= (p.instrumentos || []).join(', ') || '-' %></td>
+              <td><%= paymentLabels[p.metodo_pagamento] %></td>
+              <td><%= formatDate(p.data_compra) %></td>
+              <td class="num"><%= formatPrice(p.valor_pago) %></td>
+              <td>
+                <span class="status status-<%= p.status_pagamento %>"><%= p.status_pagamento %></span>
+                <% if (p.status_pagamento === 'pendente') { %>
+                  <form method="post" action="/library/<%= p.id %>/confirm" class="inline">
+                    <button class="link-button small" type="submit">já paguei</button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <p class="empty">Nenhuma compra ainda. <a href="/explore">Explore o catálogo</a>.</p>
+  <% } %>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Meus backing tracks publicados</h2>
+    <a href="/publish" class="small">publicar novo</a>
+  </div>
+  <% if (published.length) { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Nome</th><th>Música</th><th>Publicado em</th><th class="num">Preço</th><th class="num">Vendas</th><th class="num">Receita</th></tr></thead>
+        <tbody>
+          <% published.forEach(function (p) { %>
+            <tr>
+              <td><a href="/tracks/<%= p.id %>"><%= p.nome %></a></td>
+              <td><%= p.musica %></td>
+              <td><%= formatDate(p.data_criacao) %></td>
+              <td class="num"><%= formatPrice(p.valor) %></td>
+              <td class="num"><%= p.vendas %></td>
+              <td class="num"><%= formatPrice(p.receita) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <p class="empty">Você ainda não publicou nada.</p>
+  <% } %>
+</section>
+
+<%- include('partials/footer') %>

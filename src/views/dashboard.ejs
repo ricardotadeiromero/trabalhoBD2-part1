@@ -1,0 +1,99 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Painel do criador</h1>
+  <p class="muted">Vendas dos backing tracks que você publicou.</p>
+</div>
+
+<% if (!byTrack.length) { %>
+  <p class="empty">Você ainda não publicou nenhum backing track. <a href="/publish">Publicar o primeiro</a></p>
+<% } else { %>
+
+<div class="stat-row">
+  <div class="stat card"><span class="stat-value"><%= formatPrice(totals.receita) %></span><span class="muted small">receita aprovada</span></div>
+  <div class="stat card"><span class="stat-value"><%= totals.aprovadas %></span><span class="muted small">vendas aprovadas</span></div>
+  <div class="stat card"><span class="stat-value"><%= formatPrice(totals.ticket_medio) %></span><span class="muted small">ticket médio</span></div>
+  <div class="stat card"><span class="stat-value"><%= totals.clientes %></span><span class="muted small">clientes diferentes</span></div>
+  <div class="stat card"><span class="stat-value"><%= totals.pendentes %> / <%= totals.recusadas %></span><span class="muted small">pendentes / recusadas</span></div>
+</div>
+
+<div class="dash-grid">
+  <div class="card">
+    <h3>Receita por mês</h3>
+    <% if (byMonth.length) { %>
+      <div class="chart-box"><canvas id="chart-month"></canvas></div>
+    <% } else { %><p class="small muted">Sem vendas aprovadas ainda.</p><% } %>
+  </div>
+  <div class="card">
+    <h3>Formas de pagamento</h3>
+    <% if (byMethod.length) { %>
+      <div class="chart-box"><canvas id="chart-method"></canvas></div>
+    <% } else { %><p class="small muted">Sem dados.</p><% } %>
+  </div>
+</div>
+
+<section class="section">
+  <h2>Por backing track</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Backing track</th><th>Música</th><th class="num">Preço</th><th class="num">Vendas</th><th class="num">Receita</th><th class="num">Em playlists</th></tr></thead>
+      <tbody>
+        <% byTrack.forEach(function (t) { %>
+          <tr>
+            <td><a href="/tracks/<%= t.id %>"><%= t.nome %></a></td>
+            <td><%= t.musica %></td>
+            <td class="num"><%= formatPrice(t.valor) %></td>
+            <td class="num"><%= t.vendas %></td>
+            <td class="num"><%= formatPrice(t.receita) %></td>
+            <td class="num"><%= t.em_playlists %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="dash-grid">
+  <section class="card">
+    <h3>Quem compra de você</h3>
+    <% if (byBuyerLevel.length) { %>
+      <ul class="bars">
+        <% const maxLevel = Math.max(...byBuyerLevel.map(function (b) { return Number(b.compras); })); %>
+        <% byBuyerLevel.forEach(function (b) { %>
+          <li>
+            <span><%= levelLabels[b.nivel_experiencia] %></span>
+            <span class="bar"><span style="width: <%= Math.round(100 * b.compras / maxLevel) %>%"></span></span>
+            <span class="num"><%= b.compras %></span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %><p class="small muted">Sem compras aprovadas.</p><% } %>
+  </section>
+
+  <section class="card">
+    <h3>Últimas vendas</h3>
+    <ul class="plain">
+      <% recent.forEach(function (r) { %>
+        <li>
+          <a href="/users/<%= r.comprador_id %>"><%= r.comprador %></a> comprou
+          <a href="/tracks/<%= r.bt_id %>"><%= r.bt_nome %></a>
+          <span class="muted small">· <%= formatDate(r.data_compra) %> · <%= formatPrice(r.valor) %></span>
+          <span class="status status-<%= r.status_pagamento %>"><%= r.status_pagamento %></span>
+        </li>
+      <% }) %>
+      <% if (!recent.length) { %><li class="muted small">Nenhuma venda ainda.</li><% } %>
+    </ul>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  window.dashboardData = {
+    months: <%- JSON.stringify(byMonth) %>,
+    methods: <%- JSON.stringify(byMethod.map(function (m) { return { label: paymentLabels[m.metodo_pagamento], vendas: Number(m.vendas) }; })) %>
+  };
+</script>
+<script src="/js/dashboard.js"></script>
+<% } %>
+
+<%- include('partials/footer') %>

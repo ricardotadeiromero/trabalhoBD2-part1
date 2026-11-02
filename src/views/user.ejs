@@ -1,0 +1,83 @@
+<%- include('partials/header') %>
+
+<div class="profile-head card">
+  <span class="avatar avatar-xl"><%= initials(profile.nome) %></span>
+  <div class="profile-info">
+    <h1><%= profile.nome %></h1>
+    <span class="badge"><%= levelLabels[profile.nivel_experiencia] %></span>
+    <dl class="profile-stats">
+      <div><dt><%= profile.seguidores %></dt><dd>seguidores</dd></div>
+      <div><dt><%= profile.seguindo %></dt><dd>seguindo</dd></div>
+      <div><dt><%= profile.publicados %></dt><dd>publicados</dd></div>
+      <div><dt><%= profile.playlists %></dt><dd>playlists</dd></div>
+    </dl>
+  </div>
+  <div>
+    <% if (isMe) { %>
+      <a href="/publish" class="btn">Publicar</a>
+    <% } else if (currentUser) { %>
+      <form method="post" action="/users/<%= profile.id %>/follow">
+        <input type="hidden" name="action" value="<%= isFollowing ? 'unfollow' : 'follow' %>">
+        <button type="submit" class="btn <%= isFollowing ? 'btn-ghost' : '' %>"><%= isFollowing ? 'Deixar de seguir' : 'Seguir' %></button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="profile-body">
+  <section>
+    <h2>Backing tracks publicados</h2>
+    <% if (published.length) { %>
+      <div class="grid">
+        <% published.forEach(function (t) { %><%- include('partials/track-card', { t }) %><% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty">Nenhum backing track publicado ainda.</p>
+    <% } %>
+  </section>
+
+  <aside>
+    <% if (favoriteArtists.length) { %>
+      <div class="card">
+        <h3>Artistas que mais toca</h3>
+        <ul class="plain">
+          <% favoriteArtists.forEach(function (a) { %>
+            <li><a href="/artists/<%= a.id %>"><%= a.nome_artistico %></a> <span class="muted small"><%= a.qtd %> backing track<%= a.qtd == 1 ? '' : 's' %></span></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <h3>Playlists</h3>
+      <% if (playlists.length) { %>
+        <ul class="plain">
+          <% playlists.forEach(function (p) { %>
+            <li><a href="/playlists/<%= p.id %>"><%= p.nome %></a> <span class="muted small"><%= p.faixas %> faixas</span></li>
+          <% }) %>
+        </ul>
+      <% } else { %><p class="small muted">Nenhuma.</p><% } %>
+    </div>
+
+    <div class="card">
+      <h3>Seguidores</h3>
+      <% if (followers.length) { %>
+        <div class="avatar-list">
+          <% followers.forEach(function (f) { %>
+            <a href="/users/<%= f.id %>" title="<%= f.nome %>" class="avatar avatar-sm"><%= initials(f.nome) %></a>
+          <% }) %>
+        </div>
+      <% } else { %><p class="small muted">Ninguém ainda.</p><% } %>
+      <h3>Seguindo</h3>
+      <% if (following.length) { %>
+        <div class="avatar-list">
+          <% following.forEach(function (f) { %>
+            <a href="/users/<%= f.id %>" title="<%= f.nome %>" class="avatar avatar-sm"><%= initials(f.nome) %></a>
+          <% }) %>
+        </div>
+      <% } else { %><p class="small muted">Ninguém.</p><% } %>
+    </div>
+  </aside>
+</div>
+
+<%- include('partials/footer') %>

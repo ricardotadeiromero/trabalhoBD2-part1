@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div>
+    <h1>Toque junto com a banda que você não tem.</h1>
+    <p class="lead">
+      Backing tracks feitos por músicos, com os stems separados por instrumento.
+      Compre, monte playlists de estudo e acompanhe quem você admira.
+    </p>
+    <div class="hero-actions">
+      <a href="/explore" class="btn">Explorar catálogo</a>
+      <% if (!currentUser) { %>
+        <a href="/register" class="btn btn-ghost">Criar conta</a>
+      <% } else { %>
+        <a href="/publish" class="btn btn-ghost">Publicar um backing track</a>
+      <% } %>
+    </div>
+  </div>
+  <dl class="hero-stats">
+    <div><dt><%= stats.backing_tracks %></dt><dd>backing tracks</dd></div>
+    <div><dt><%= stats.stems %></dt><dd>stems</dd></div>
+    <div><dt><%= stats.musicos %></dt><dd>músicos</dd></div>
+    <div><dt><%= stats.artistas %></dt><dd>artistas</dd></div>
+  </dl>
+</section>
+
+<% if (currentUser) { %>
+  <section class="section">
+    <div class="section-head">
+      <h2>De quem você segue</h2>
+      <a href="/people" class="small">encontrar músicos</a>
+    </div>
+    <% if (feed.length) { %>
+      <div class="grid">
+        <% feed.forEach(function (t) { %><%- include('partials/track-card', { t }) %><% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty">Você ainda não segue ninguém que publicou algo. Dá uma olhada em <a href="/people">Músicos</a>.</p>
+    <% } %>
+  </section>
+<% } %>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Mais vendidos</h2>
+    <a href="/explore?sort=popular" class="small">ver todos</a>
+  </div>
+  <div class="grid">
+    <% bestSellers.forEach(function (t) { %><%- include('partials/track-card', { t }) %><% }) %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Playlists mais salvas</h2></div>
+  <div class="list-cards">
+    <% topPlaylists.forEach(function (p) { %>
+      <a class="card playlist-row" href="/playlists/<%= p.id %>">
+        <strong><%= p.nome %></strong>
+        <span class="muted small">de <%= p.dono %> · <%= p.faixas %> faixas</span>
+        <span class="badge"><%= p.salvamentos %> salv.</span>
+      </a>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

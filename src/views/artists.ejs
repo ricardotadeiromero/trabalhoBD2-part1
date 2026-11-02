@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Artistas</h1>
+  <p class="muted">Os artistas das músicas originais e quantos backing tracks já foram feitos em cima delas.</p>
+</div>
+
+<div class="people-grid">
+  <% artists.forEach(function (a) { %>
+    <a class="card artist-card" href="/artists/<%= a.id %>">
+      <div class="cover" style="--hue: <%= (a.id * 71) % 360 %>"><span><%= initials(a.nome_artistico) %></span></div>
+      <strong><%= a.nome_artistico %></strong>
+      <span class="muted small"><%= a.albuns %> álbuns · <%= a.musicas %> músicas</span>
+      <span class="badge"><%= a.backing_tracks %> backing tracks</span>
+    </a>
+  <% }) %>
+</div>
+
+<%- include('partials/footer') %>

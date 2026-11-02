@@ -1,0 +1,83 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Explorar</h1>
+  <p class="muted">
+    <%= tracks.length %> resultado<%= tracks.length === 1 ? '' : 's' %>
+    <% if (songTitle) { %> para a música <strong><%= songTitle %></strong> · <a href="/explore">limpar</a><% } %>
+  </p>
+</div>
+
+<div class="explore">
+  <form class="filters card" method="get" action="/explore">
+    <% if (filters.song) { %><input type="hidden" name="song" value="<%= filters.song %>"><% } %>
+    <label>Busca
+      <input type="search" name="q" value="<%= filters.q %>" placeholder="ex.: piano, forró, Ana Vento">
+    </label>
+
+    <label>Instrumento nos stems
+      <select name="instrument">
+        <option value="">Qualquer um</option>
+        <% instruments.forEach(function (i) { %>
+          <option value="<%= i.instrumento %>" <%= filters.instrument === i.instrumento ? 'selected' : '' %>><%= i.instrumento %> (<%= i.qtd %>)</option>
+        <% }) %>
+      </select>
+    </label>
+
+    <label>Artista original
+      <select name="artist">
+        <option value="">Todos</option>
+        <% artists.forEach(function (a) { %>
+          <option value="<%= a.id %>" <%= String(filters.artist) === String(a.id) ? 'selected' : '' %>><%= a.nome_artistico %></option>
+        <% }) %>
+      </select>
+    </label>
+
+    <label>Preço até
+      <input type="number" name="maxPrice" min="0" step="1" value="<%= filters.maxPrice %>" placeholder="R$">
+    </label>
+
+    <label>Nível de quem criou
+      <select name="level">
+        <option value="">Qualquer</option>
+        <% Object.keys(levelLabels).forEach(function (key) { %>
+          <option value="<%= key %>" <%= filters.level === key ? 'selected' : '' %>><%= levelLabels[key] %></option>
+        <% }) %>
+      </select>
+    </label>
+
+    <label>Ordenar por
+      <select name="sort">
+        <option value="popular" <%= filters.sort === 'popular' ? 'selected' : '' %>>Mais vendidos</option>
+        <option value="recent" <%= filters.sort === 'recent' ? 'selected' : '' %>>Mais recentes</option>
+        <option value="price_asc" <%= filters.sort === 'price_asc' ? 'selected' : '' %>>Menor preço</option>
+        <option value="price_desc" <%= filters.sort === 'price_desc' ? 'selected' : '' %>>Maior preço</option>
+        <option value="name" <%= filters.sort === 'name' ? 'selected' : '' %>>Nome</option>
+      </select>
+    </label>
+
+    <% if (currentUser) { %>
+      <label class="check">
+        <input type="checkbox" name="hideOwned" value="1" <%= filters.hideOwned ? 'checked' : '' %>>
+        Esconder os que já tenho
+      </label>
+    <% } %>
+
+    <div class="filters-actions">
+      <button type="submit" class="btn">Filtrar</button>
+      <a href="/explore" class="btn btn-ghost">Limpar</a>
+    </div>
+  </form>
+
+  <div>
+    <% if (tracks.length) { %>
+      <div class="grid">
+        <% tracks.forEach(function (t) { %><%- include('partials/track-card', { t }) %><% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty">Nada encontrado com esses filtros. Tenta afrouxar um pouco a busca.</p>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

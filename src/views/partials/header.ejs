@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · Ensaio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="brand">
+        <img src="/img/icon.svg" alt="" width="28" height="28">
+        <span>Ensaio</span>
+      </a>
+
+      <form action="/explore" method="get" class="topbar-search">
+        <input type="search" name="q" placeholder="Buscar música, artista ou backing track" aria-label="Buscar">
+      </form>
+
+      <nav class="nav" id="nav">
+        <a href="/explore" class="<%= currentPath.startsWith('/explore') ? 'active' : '' %>">Explorar</a>
+        <a href="/artists" class="<%= currentPath.startsWith('/artists') ? 'active' : '' %>">Artistas</a>
+        <a href="/people" class="<%= currentPath.startsWith('/people') || currentPath.startsWith('/users') ? 'active' : '' %>">Músicos</a>
+        <% if (currentUser) { %>
+          <a href="/playlists" class="<%= currentPath.startsWith('/playlists') ? 'active' : '' %>">Playlists</a>
+          <a href="/library" class="<%= currentPath.startsWith('/library') ? 'active' : '' %>">Biblioteca</a>
+          <a href="/dashboard" class="<%= currentPath.startsWith('/dashboard') ? 'active' : '' %>">Painel</a>
+          <a href="/publish" class="btn btn-small">Publicar</a>
+          <details class="user-menu">
+            <summary><span class="avatar avatar-sm"><%= initials(currentUser.nome) %></span></summary>
+            <div class="user-menu-box">
+              <a href="/users/<%= currentUser.id %>">Meu perfil</a>
+              <form action="/logout" method="post"><button type="submit" class="link-button">Sair</button></form>
+            </div>
+          </details>
+        <% } else { %>
+          <a href="/login" class="<%= currentPath === '/login' ? 'active' : '' %>">Entrar</a>
+          <a href="/register" class="btn btn-small">Criar conta</a>
+        <% } %>
+      </nav>
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-controls="nav">☰</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <% if (flash) { %>
+      <div class="flash flash-<%= flash.type %>"><%= flash.text %></div>
+    <% } %>

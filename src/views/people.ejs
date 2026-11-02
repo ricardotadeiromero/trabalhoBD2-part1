@@ -1,0 +1,73 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Músicos</h1>
+  <p class="muted">Encontre quem toca o seu instrumento e acompanhe o que publicam.</p>
+</div>
+
+<form method="get" action="/people" class="card inline-form">
+  <input type="search" name="q" value="<%= filters.q %>" placeholder="Nome">
+  <select name="level">
+    <option value="">Qualquer nível</option>
+    <% Object.keys(levelLabels).forEach(function (key) { %>
+      <option value="<%= key %>" <%= filters.level === key ? 'selected' : '' %>><%= levelLabels[key] %></option>
+    <% }) %>
+  </select>
+  <select name="instrument">
+    <option value="">Publica com qualquer instrumento</option>
+    <% instruments.forEach(function (i) { %>
+      <option value="<%= i %>" <%= filters.instrument === i ? 'selected' : '' %>><%= i %></option>
+    <% }) %>
+  </select>
+  <button type="submit" class="btn">Buscar</button>
+</form>
+
+<% if (suggestions.length) { %>
+  <section class="section">
+    <h2>Sugestões para você</h2>
+    <div class="list-cards">
+      <% suggestions.forEach(function (s) { %>
+        <div class="card person-row">
+          <span class="avatar"><%= initials(s.nome) %></span>
+          <div>
+            <a href="/users/<%= s.id %>"><strong><%= s.nome %></strong></a>
+            <div class="muted small">seguido por <%= s.via %></div>
+          </div>
+          <form method="post" action="/users/<%= s.id %>/follow">
+            <input type="hidden" name="back" value="/people">
+            <button type="submit" class="btn btn-small">Seguir</button>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+<% } %>
+
+<section class="section">
+  <div class="people-grid">
+    <% people.forEach(function (p) { %>
+      <div class="card person-card">
+        <span class="avatar avatar-lg"><%= initials(p.nome) %></span>
+        <a href="/users/<%= p.id %>"><strong><%= p.nome %></strong></a>
+        <span class="badge"><%= levelLabels[p.nivel_experiencia] %></span>
+        <span class="muted small"><%= p.seguidores %> seguidores · <%= p.publicados %> publicados</span>
+        <% if (p.instrumentos && p.instrumentos.length) { %>
+          <div class="chips center">
+            <% p.instrumentos.slice(0, 4).forEach(function (i) { %><span class="chip"><%= i %></span><% }) %>
+          </div>
+        <% } %>
+        <% if (currentUser && currentUser.id !== p.id) { %>
+          <% const following = followingIds.includes(p.id); %>
+          <form method="post" action="/users/<%= p.id %>/follow">
+            <input type="hidden" name="action" value="<%= following ? 'unfollow' : 'follow' %>">
+            <input type="hidden" name="back" value="/people">
+            <button type="submit" class="btn btn-small <%= following ? 'btn-ghost' : '' %>"><%= following ? 'Seguindo' : 'Seguir' %></button>
+          </form>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+  <% if (!people.length) { %><p class="empty">Ninguém encontrado.</p><% } %>
+</section>
+
+<%- include('partials/footer') %>

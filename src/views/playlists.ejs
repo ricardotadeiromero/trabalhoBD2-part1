@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Playlists</h1>
+</div>
+
+<form method="post" action="/playlists" class="card inline-form">
+  <input type="text" name="nome" maxlength="60" placeholder="Nome da nova playlist" required>
+  <button type="submit" class="btn">Criar</button>
+</form>
+
+<section class="section">
+  <h2>Minhas playlists</h2>
+  <% if (mine.length) { %>
+    <div class="list-cards">
+      <% mine.forEach(function (p) { %>
+        <a class="card playlist-row" href="/playlists/<%= p.id %>">
+          <strong><%= p.nome %></strong>
+          <span class="muted small"><%= p.faixas %> faixas · <%= formatDuration(p.duracao_total) %> · criada em <%= formatDate(p.data_criacao) %></span>
+          <span class="badge"><%= p.salvamentos %> salv.</span>
+        </a>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p class="empty">Você ainda não tem playlists.</p>
+  <% } %>
+</section>
+
+<section class="section">
+  <h2>Salvas por mim</h2>
+  <% if (saved.length) { %>
+    <div class="list-cards">
+      <% saved.forEach(function (p) { %>
+        <a class="card playlist-row" href="/playlists/<%= p.id %>">
+          <strong><%= p.nome %></strong>
+          <span class="muted small">de <%= p.dono %> · <%= p.faixas %> faixas · salva em <%= formatDate(p.data_salva) %></span>
+        </a>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p class="empty">Nenhuma playlist salva. Playlists de outros músicos aparecem nos perfis deles.</p>
+  <% } %>
+</section>
+
+<%- include('partials/footer') %>
