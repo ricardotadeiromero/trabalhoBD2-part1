@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { requireLogin, setFlash } = require('../middleware');
-const { parseDuration } = require('../helpers');
+const { parseDuration, parsePrice, instrumentLabels, normalizeInstrument } = require('../helpers');
 
 const router = express.Router();
 
@@ -170,11 +170,11 @@ router.post('/publish', requireLogin, async (req, res) => {
   const names = [].concat(req.body.stem_nome || []);
   const instruments = [].concat(req.body.stem_instrumento || []);
   const stems = names
-    .map((name, i) => ({ nome: name.trim(), instrumento: (instruments[i] || '').trim().toLowerCase() }))
-    .filter((s) => s.nome);
+    .map((name, i) => ({ nome: name.trim(), instrumento: normalizeInstrument(instruments[i]) }))
+    .filter((s) => s.nome || s.instrumento);
 
   const seconds = parseDuration(form.duracao);
-  const price = Number(String(form.valor).replace(',', '.'));
+  const price = parsePrice(form.valor);
 
   const fail = async (error) =>
     res.status(400).render('publish', {
@@ -185,9 +185,22 @@ router.post('/publish', requireLogin, async (req, res) => {
     });
 
   if (!form.nome || !form.musica_id) return fail('Dê um nome e escolha a música.');
-  if (Number.isNaN(price) || price < 0) return fail('Preço inválido.');
+  if (price === null) return fail('Preço inválido. Use o formato 19,90 (até R$ 999,99).');
   if (!seconds) return fail('Duração no formato mm:ss, por exemplo 3:45.');
   if (stems.length === 0) return fail('Adicione pelo menos um stem (faixa separada).');
+
+  for (const stem of stems) {
+    if (!stem.nome) return fail(`O stem de ${stem.instrumento} está sem nome.`);
+    if (!stem.instrumento) return fail(`Escolha o instrumento do stem "${stem.nome}".`);
+    if (!instrumentLabels[stem.instrumento]) {
+      return fail(`"${stem.instrumento}" não está na lista de instrumentos.`);
+    }
+  }
+  const stemNames = stems.map((s) => s.nome.toLowerCase());
+  if (new Set(stemNames).size !== stemNames.length) return fail('Dois stems estão com o mesmo nome.');
+
+  const songExists = await db.query('SELECT 1 FROM Musica WHERE id = $1', [form.musica_id]);
+  if (songExists.rowCount === 0) return fail('Essa música não existe mais, escolha outra.');
 
   try {
     const newId = await db.withTransaction(async (client) => {
@@ -203,7 +216,7 @@ router.post('/publish', requireLogin, async (req, res) => {
         await client.query(
           `INSERT INTO Track (nome_faixa, instrumento, duracao, backingtrack_id)
            VALUES ($1, $2, $3, $4)`,
-          [stem.nome, stem.instrumento || null, seconds, btId]
+          [stem.nome, stem.instrumento, seconds, btId]
         );
       }
       return btId;

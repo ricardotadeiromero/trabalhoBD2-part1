@@ -9,7 +9,7 @@
 
 <form method="post" action="/publish" class="form card publish-form">
   <label>Música original
-    <select name="musica_id" required>
+    <select name="musica_id" required data-searchable data-search-placeholder="Digite a música, o artista ou o álbum">
       <option value="">Selecione...</option>
       <% songs.forEach(function (s) { %>
         <option value="<%= s.id %>" <%= Number(form.musica_id) === s.id ? 'selected' : '' %>>
@@ -25,10 +25,12 @@
 
   <div class="form-row">
     <label>Preço (R$)
-      <input type="text" name="valor" value="<%= form.valor || '' %>" inputmode="decimal" placeholder="19,90" required>
+      <input type="text" name="valor" value="<%= form.valor || '' %>" inputmode="decimal" placeholder="19,90"
+             maxlength="6" data-mask="price" autocomplete="off" required>
     </label>
     <label>Duração (mm:ss)
-      <input type="text" name="duracao" value="<%= form.duracao || '' %>" placeholder="3:45" pattern="\d{1,3}:[0-5]\d" required>
+      <input type="text" name="duracao" value="<%= form.duracao || '' %>" inputmode="numeric" placeholder="3:45"
+             maxlength="5" data-mask="duration" autocomplete="off" required>
     </label>
   </div>
 
@@ -40,16 +42,18 @@
       <% rows.forEach(function (s) { %>
         <div class="stem-row">
           <input type="text" name="stem_nome" value="<%= s.nome %>" placeholder="Nome da faixa" maxlength="60">
-          <input type="text" name="stem_instrumento" value="<%= s.instrumento %>" placeholder="Instrumento" maxlength="30" list="instrument-list">
+          <input type="text" name="stem_instrumento" value="<%= instrumentLabels[s.instrumento] || s.instrumento %>" placeholder="Instrumento"
+                 maxlength="30" list="instrument-list" data-instrument autocomplete="off">
           <button type="button" class="btn btn-ghost btn-small" data-remove-stem aria-label="Remover">×</button>
         </div>
       <% }) %>
     </div>
     <datalist id="instrument-list">
-      <% ['baixo','bateria','guitarra','piano','violao','viola caipira','violino','violoncelo','sanfona','zabumba','triangulo','percussao','sintetizador','saxofone','voz'].forEach(function (i) { %>
-        <option value="<%= i %>"></option>
+      <% Object.keys(instrumentLabels).forEach(function (key) { %>
+        <option value="<%= instrumentLabels[key] %>"></option>
       <% }) %>
     </datalist>
+    <p class="field-hint small" data-stems-hint hidden></p>
     <button type="button" class="btn btn-ghost btn-small" id="add-stem">+ adicionar stem</button>
   </fieldset>
 

@@ -16,7 +16,7 @@
     </label>
 
     <label>Instrumento nos stems
-      <select name="instrument">
+      <select name="instrument" data-searchable data-search-placeholder="Qualquer um">
         <option value="">Qualquer um</option>
         <% instruments.forEach(function (i) { %>
           <option value="<%= i.instrumento %>" <%= filters.instrument === i.instrumento ? 'selected' : '' %>><%= i.instrumento %> (<%= i.qtd %>)</option>
@@ -25,7 +25,7 @@
     </label>
 
     <label>Artista original
-      <select name="artist">
+      <select name="artist" data-searchable data-search-placeholder="Todos">
         <option value="">Todos</option>
         <% artists.forEach(function (a) { %>
           <option value="<%= a.id %>" <%= String(filters.artist) === String(a.id) ? 'selected' : '' %>><%= a.nome_artistico %></option>

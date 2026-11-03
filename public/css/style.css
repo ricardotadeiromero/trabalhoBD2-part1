@@ -137,6 +137,49 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1
 input[type="checkbox"] { width: auto; accent-color: var(--accent); }
 input.invalid, input.invalid:focus { border-color: var(--danger); outline-color: var(--danger); }
 .field-hint { color: var(--danger); margin: -8px 0 0; }
+.field-error { color: var(--danger); }
+
+/* select com busca (main.js > makeSearchable) */
+.combo { position: relative; display: flex; flex-direction: column; }
+.combo-input { width: 100%; padding-right: 30px; }
+.combo::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+.combo-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .4);
+}
+.combo-list li {
+  padding: 7px 10px;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: .9rem;
+  cursor: pointer;
+}
+.combo-list li.active { background: var(--border); }
+.combo-list li[aria-selected="true"] { color: var(--accent); }
+.combo-list .combo-empty { color: var(--muted); cursor: default; }
 
 .form { display: flex; flex-direction: column; gap: 14px; }
 .form label { display: flex; flex-direction: column; gap: 4px; font-size: .9rem; color: var(--muted); }

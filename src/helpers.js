@@ -51,9 +51,66 @@ function formatCpf(value) {
 // mm:ss -> segundos (usado no formulario de publicar)
 function parseDuration(text) {
   if (!text) return null;
-  const match = String(text).trim().match(/^(\d{1,3}):([0-5]\d)$/);
+  const match = String(text).trim().match(/^(\d{1,2}):([0-5]\d)$/);
   if (!match) return null;
   return Number(match[1]) * 60 + Number(match[2]);
+}
+
+// aceita "19,90", "19.90" ou "19"; devolve null se nao for preco valido
+function parsePrice(text) {
+  const value = String(text || '').trim();
+  if (!/^\d{1,3}([.,]\d{1,2})?$/.test(value)) return null;
+  return Number(value.replace(',', '.'));
+}
+
+// no banco os instrumentos ficam sem acento e em minusculo (violao, percussao...)
+const instrumentLabels = {
+  baixo: 'baixo',
+  bandolim: 'bandolim',
+  bateria: 'bateria',
+  berimbau: 'berimbau',
+  cavaquinho: 'cavaquinho',
+  charango: 'charango',
+  clarinete: 'clarinete',
+  contrabaixo: 'contrabaixo',
+  cuica: 'cuíca',
+  flauta: 'flauta',
+  gaita: 'gaita',
+  guitarra: 'guitarra',
+  harpa: 'harpa',
+  kora: 'kora',
+  orgao: 'órgão',
+  oud: 'oud',
+  pandeiro: 'pandeiro',
+  percussao: 'percussão',
+  piano: 'piano',
+  sanfona: 'sanfona',
+  saxofone: 'saxofone',
+  sintetizador: 'sintetizador',
+  surdo: 'surdo',
+  tamborim: 'tamborim',
+  teclado: 'teclado',
+  triangulo: 'triângulo',
+  trombone: 'trombone',
+  trompete: 'trompete',
+  ukulele: 'ukulele',
+  'viola caipira': 'viola caipira',
+  'viola de arco': 'viola de arco',
+  violao: 'violão',
+  violino: 'violino',
+  violoncelo: 'violoncelo',
+  voz: 'voz',
+  zabumba: 'zabumba',
+};
+
+// "  Violão " -> "violao"
+function normalizeInstrument(text) {
+  return String(text || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 module.exports = {
@@ -65,4 +122,7 @@ module.exports = {
   initials,
   formatCpf,
   parseDuration,
+  parsePrice,
+  instrumentLabels,
+  normalizeInstrument,
 };
