@@ -12,7 +12,8 @@
     </label>
     <div class="form-row">
       <label>CPF
-        <input type="text" name="cpf" value="<%= form.cpf || '' %>" inputmode="numeric" placeholder="só números" required>
+        <input type="text" name="cpf" value="<%= formatCpf(form.cpf) %>" inputmode="numeric" placeholder="000.000.000-00"
+               maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" title="CPF com 11 dígitos" data-mask="cpf" autocomplete="off" required>
       </label>
       <label>Nascimento
         <input type="date" name="data_nascimento" value="<%= form.data_nascimento || '' %>">
@@ -25,9 +26,15 @@
         <% }) %>
       </select>
     </label>
-    <label>Senha
-      <input type="password" name="senha" minlength="6" required>
-    </label>
+    <div class="form-row">
+      <label>Senha
+        <input type="password" name="senha" id="senha" minlength="6" autocomplete="new-password" required>
+      </label>
+      <label>Confirmar senha
+        <input type="password" name="senha_confirmacao" data-match="senha" autocomplete="new-password" required>
+      </label>
+    </div>
+    <p class="field-hint small" data-match-hint hidden>As senhas não conferem.</p>
     <button type="submit" class="btn">Criar conta</button>
   </form>
   <p class="small muted">Já tem conta? <a href="/login">Entrar</a></p>

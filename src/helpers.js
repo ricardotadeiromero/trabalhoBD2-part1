@@ -41,6 +41,13 @@ function initials(name) {
     .join('');
 }
 
+// 12345678901 -> 123.456.789-01 (deixa como veio se nao tiver 11 digitos)
+function formatCpf(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (digits.length !== 11) return digits;
+  return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
 // mm:ss -> segundos (usado no formulario de publicar)
 function parseDuration(text) {
   if (!text) return null;
@@ -56,5 +63,6 @@ module.exports = {
   levelLabels,
   paymentLabels,
   initials,
+  formatCpf,
   parseDuration,
 };

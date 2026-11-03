@@ -52,6 +52,8 @@ router.post('/register', async (req, res) => {
   if (!form.nome || !form.email) return renderError('Preencha nome e e-mail.');
   if (form.cpf.length !== 11) return renderError('O CPF precisa ter 11 dígitos.');
   if (password.length < 6) return renderError('A senha precisa ter pelo menos 6 caracteres.');
+  // o front já confere, mas sem JS o formulário passa direto
+  if (password !== req.body.senha_confirmacao) return renderError('As senhas não conferem.');
 
   const hash = await bcrypt.hash(password, 10);
 

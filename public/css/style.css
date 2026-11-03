@@ -85,7 +85,8 @@ main.container { flex: 1; padding-top: 24px; padding-bottom: 48px; }
 
 .nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .nav > a { color: var(--muted); padding: 6px 10px; border-radius: 6px; }
-.nav > a:hover { color: var(--text); text-decoration: none; background: var(--surface-2); }
+/* sem o :not(.btn) essa regra ganhava do .btn:hover e o Publicar ficava escuro com texto escuro */
+.nav > a:not(.btn):hover { color: var(--text); text-decoration: none; background: var(--surface-2); }
 .nav > a.active { color: var(--text); }
 .nav > a.btn { color: #14161b; margin-left: 6px; }
 
@@ -134,6 +135,8 @@ input, select, textarea {
 }
 input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 input[type="checkbox"] { width: auto; accent-color: var(--accent); }
+input.invalid, input.invalid:focus { border-color: var(--danger); outline-color: var(--danger); }
+.field-hint { color: var(--danger); margin: -8px 0 0; }
 
 .form { display: flex; flex-direction: column; gap: 14px; }
 .form label { display: flex; flex-direction: column; gap: 4px; font-size: .9rem; color: var(--muted); }

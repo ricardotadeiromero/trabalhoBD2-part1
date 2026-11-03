@@ -13,6 +13,37 @@ document.querySelectorAll('form[data-confirm]').forEach((form) => {
   });
 });
 
+// máscara de CPF: 000.000.000-00
+function maskCpf(value) {
+  const d = value.replace(/\D/g, '').slice(0, 11);
+  if (d.length > 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+  if (d.length > 6) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+  if (d.length > 3) return `${d.slice(0, 3)}.${d.slice(3)}`;
+  return d;
+}
+
+document.querySelectorAll('input[data-mask="cpf"]').forEach((input) => {
+  input.addEventListener('input', () => {
+    input.value = maskCpf(input.value);
+  });
+});
+
+// confirmação de senha: só deixa enviar quando as duas batem
+document.querySelectorAll('input[data-match]').forEach((confirmInput) => {
+  const original = document.getElementById(confirmInput.dataset.match);
+  const hint = confirmInput.form.querySelector('[data-match-hint]');
+
+  const check = () => {
+    const mismatch = confirmInput.value !== '' && confirmInput.value !== original.value;
+    confirmInput.setCustomValidity(mismatch ? 'As senhas não conferem.' : '');
+    confirmInput.classList.toggle('invalid', mismatch);
+    if (hint) hint.hidden = !mismatch;
+  };
+
+  confirmInput.addEventListener('input', check);
+  original.addEventListener('input', check);
+});
+
 // linhas de stem na tela de publicar
 const stemsBox = document.getElementById('stems');
 const addStemButton = document.getElementById('add-stem');
