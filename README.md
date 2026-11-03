@@ -1,13 +1,10 @@
 # Ensaio
 
-Trabalho de Banco de Dados II (Parte 01), Grupo H: Alan Souza, Lucas de Souza Silva, Murilo Farinazzo Vieira, Pedro Rossi e Ricardo Romero.
+Trabalho de Banco de Dados II (Parte 01), Grupo H: Alan Souza, Pedro Rossi e Ricardo Romero.
 
 O Ensaio é um marketplace de **backing tracks**: músicos publicam versões de músicas com os
 instrumentos separados (os *stems*) e outros músicos compram para estudar ou tocar junto.
 A aplicação usa o banco que a gente modelou no BD I (tema "Spotify"), sem refazer as tabelas.
-
-- Aplicação: _link do Render aqui_
-- Banco: PostgreSQL no Neon
 
 ## O que dá pra fazer
 
@@ -43,11 +40,12 @@ Com os dados novos, as buscas do `03_buscas.sql` dão resultados diferentes dos 
 
 ## Rodando localmente
 
-Precisa de Node 20 ou mais novo.
+Precisa de Node 20 ou mais novo e de um PostgreSQL (local ou no Neon) com as extensões
+`pgcrypto` e `unaccent` disponíveis. O setup cria as duas.
 
 ```bash
 npm install
-cp .env.example .env      # e coloque a connection string do Neon
+cp .env.example .env      # e coloque a connection string do banco em DATABASE_URL
 npm run db:setup          # cria e popula o banco
 npm run dev               # http://localhost:3000
 ```
@@ -63,24 +61,6 @@ Todos vêm do seed (`02_populate.sql` e `04_more_data.sql`). Alguns que mostram 
 | mateus.pinto@email.com | guitarra10 | publicou e vendeu bastante, bom pro painel |
 | helena.costa@email.com | focototal | comprou vários, segue gente, tem a playlist Foco Total |
 | alice.prado@email.com | segredo123 | usuária iniciante |
-
-## Deploy
-
-### Neon
-
-1. Criar um projeto em [neon.tech](https://neon.tech) (região São Paulo, se tiver).
-2. Em *Connect*, copiar a connection string (a que termina com `?sslmode=require`).
-3. Colocar no `.env` como `DATABASE_URL` e rodar `npm run db:setup` da sua máquina.
-
-### Render
-
-1. Subir este repositório no GitHub.
-2. No Render: *New > Blueprint* e escolher o repositório (ele lê o `render.yaml`).
-   Dá pra fazer também em *New > Web Service*, com build `npm install` e start `npm start`.
-3. Preencher a variável `DATABASE_URL` com a mesma connection string do Neon.
-   O `SESSION_SECRET` o Render gera sozinho.
-
-No plano grátis o Render "dorme" depois de um tempo parado, então o primeiro acesso demora uns 30 segundos.
 
 ## Estrutura
 
