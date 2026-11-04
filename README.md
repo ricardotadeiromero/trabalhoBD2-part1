@@ -62,6 +62,29 @@ Todos vêm do seed (`02_populate.sql` e `04_more_data.sql`). Alguns que mostram 
 | helena.costa@email.com | focototal | comprou vários, segue gente, tem a playlist Foco Total |
 | alice.prado@email.com | segredo123 | usuária iniciante |
 
+### Vendo o painel (os gráficos)
+
+Os gráficos ficam no **Painel do criador**, que só aparece para quem está logado e mostra
+as vendas dos backing tracks que *a própria pessoa* publicou. Por isso o usuário certo pra ver
+é um criador que já vendeu:
+
+1. Com o `npm run dev` rodando, abra http://localhost:3000 e clique em **Entrar** (canto superior direito).
+2. Entre com `mateus.pinto@email.com` / `guitarra10`.
+3. Clique em **Painel** no menu de cima (ou abra direto http://localhost:3000/dashboard).
+
+O que aparece lá:
+
+- **Cards no topo**: receita aprovada, vendas aprovadas, ticket médio, clientes diferentes e compras pendentes/recusadas
+- **Receita por mês**: gráfico de barras com as vendas aprovadas agrupadas por mês
+- **Formas de pagamento**: gráfico de rosca com as vendas por método (Pix, cartão, boleto...)
+- **Por backing track**: tabela com preço, vendas, receita e em quantas playlists cada um está
+- **Quem compra de você**: barras com o nível dos músicos que compraram
+- **Últimas vendas**: as 10 compras mais recentes com o status do pagamento
+
+Os dois gráficos usam Chart.js carregado de CDN, então o navegador precisa de internet.
+Uma conta nova, que ainda não publicou nada, vê só o aviso "Você ainda não publicou nenhum
+backing track" no lugar dos gráficos.
+
 ## Estrutura
 
 ```

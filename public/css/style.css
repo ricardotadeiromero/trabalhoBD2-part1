@@ -183,7 +183,8 @@ input.invalid, input.invalid:focus { border-color: var(--danger); outline-color:
 
 .form { display: flex; flex-direction: column; gap: 14px; }
 .form label { display: flex; flex-direction: column; gap: 4px; font-size: .9rem; color: var(--muted); }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* minmax(0, 1fr): sem isso a largura minima do input empurra a segunda coluna pra fora do card */
+.form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .form fieldset { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
 .form legend { padding: 0 6px; color: var(--text); }
 
